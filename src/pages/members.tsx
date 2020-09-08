@@ -1,5 +1,6 @@
-import { Container, Divider, Avatar } from "@material-ui/core";
+import { Container, Divider, Avatar, Dialog, ButtonBase, DialogContent, IconButton } from "@material-ui/core";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
+import {Web, Email, GitHub, LinkedIn} from '@material-ui/icons';
 import { NextPage } from "next";
 import React, { FunctionComponent, Fragment } from "react";
 import ContentsLayout from "../components/layouts/ContentsLayout";
@@ -24,7 +25,7 @@ const useMainStyles = makeStyles(theme =>
         },
 
         divider: {
-            opacity: 0.5
+            opacity: 0.35
         },
 
         footerMembers: {
@@ -32,7 +33,65 @@ const useMainStyles = makeStyles(theme =>
             display: "flex",
             justifyContent: "space-around",
             alignItems: "center"
-        }
+        },
+    })
+);
+
+const useModalStyles = makeStyles(theme => 
+    createStyles({
+        paper: {
+            width: '1250px',
+            borderRadius: '5%',
+            padding: '30px'
+        },
+
+        content: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+        },
+
+        title: {
+            margin: 0,
+            paddingTop: '10px',
+            fontWeight: "bold",
+            fontFamily: "Calibri, sans-serif",
+            fontSize: "50px",
+            letterSpacing: 1.5,
+            textAlign: "center",
+            textShadow: "-3px 3px 5px #ccd4e3CC"
+        },
+
+        avatarContainer: {
+            borderRadius: '100%',
+        },
+
+        avatar: {
+            width: theme.spacing(16),
+            height: theme.spacing(16),
+            boxShadow: "0px 7px 17px #ccd4e3"
+        },
+
+        heading: {
+            margin: 0,
+            paddingTop: '5px',
+            paddingBottom: '5px',
+            fontSize: '23px',
+            fontWeight: 'bolder',
+            alignSelf: 'flex-start',
+            color: "#536075"
+        },
+
+        icon: {
+            color: '#2185ED',
+        },
+
+        description: {
+            padding: '10px',
+            color: "#7a89a3",
+            textAlign: 'center',
+            fontStyle: 'italic'
+        },
     })
 );
 
@@ -89,8 +148,8 @@ const useSectionStyles = makeStyles(theme =>
         },
 
         memberAvatar: {
-            width: props => (props.lite ? theme.spacing(6) : theme.spacing(10)),
-            height: props => (props.lite ? theme.spacing(6) : theme.spacing(10)),
+            width: props => (props.lite ? theme.spacing(8) : theme.spacing(12)),
+            height: props => (props.lite ? theme.spacing(8) : theme.spacing(12)),
             boxShadow: props => (props.lite ? "0px 3px 10px #ccd4e3EE" : "0px 5px 15px #ccd4e3")
         },
 
@@ -113,7 +172,7 @@ const useSectionStyles = makeStyles(theme =>
             letterSpacing: 2,
             textShadow: "1px 1px 2px #e6eaf0",
             color: "#7a89a3"
-        }
+        },
     })
 );
 
@@ -124,17 +183,59 @@ interface MemberListingProps {
 
 /*
 A container for holding the avatar, name and title of a member
-
-TO-DO:
-    - Add a modal that displays member information on avatar-click
 */
 const MemberListing: FunctionComponent<MemberListingProps> = props => {
+    const modalClasses = useModalStyles();
+    const [modalDisplayed, setModalDisplayed] = React.useState(false);
+
+    const toggleModal = () => {
+        setModalDisplayed(!modalDisplayed);
+    }
+
     return (
-        <div className={props.classes.member}>
-            <Avatar className={props.classes.memberAvatar}></Avatar>
-            <h6 className={props.classes.memberName}>{props.member.name}</h6>
-            <h6 className={props.classes.memberTitle}>{props.member.title}</h6>
-        </div>
+        <Fragment>
+            <div className={props.classes.member}>
+                <ButtonBase onClick={toggleModal} className={modalClasses.avatarContainer} style={{ outline: 0 }}>
+                    <Avatar className={props.classes.memberAvatar}/>
+                </ButtonBase>
+                <h6 className={props.classes.memberName}>{props.member.name}</h6>
+                <h6 className={props.classes.memberTitle}>{props.member.title}</h6>
+            </div>
+            <Dialog
+                classes={{
+                    paper: modalClasses.paper
+                }}
+                open={modalDisplayed}
+                onClose={toggleModal}
+                onBackdropClick={toggleModal}
+            >
+                <DialogContent className={modalClasses.content}>
+                    <Avatar className={modalClasses.avatar}/>
+                    <h3 className={modalClasses.title}>Name</h3>
+                    <div>
+                        <IconButton style={{ outline: 0 }}>
+                            <Web className={modalClasses.icon} fontSize='small'/>
+                        </IconButton>
+
+                        <IconButton style={{ outline: 0 }}>
+                            <Email className={modalClasses.icon} fontSize='small'/>
+                        </IconButton>
+
+                        <IconButton style={{ outline: 0 }}>
+                            <GitHub className={modalClasses.icon} fontSize='small'/>
+                        </IconButton>
+
+                        <IconButton style={{ outline: 0 }}>
+                            <LinkedIn className={modalClasses.icon} fontSize='small'/>
+                        </IconButton>
+                    </div>
+
+                    <div className={modalClasses.description}>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi in egestas tortor. Vivamus tempus lacinia molestie. Etiam placerat interdum tortor dictum ultrices. Cras fringilla facilisis lorem eu blandit. Morbi gravida fringilla sagittis. Duis at blandit mi. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nullam vestibulum quam mi, nec porta nisl fringilla eu. Mauris facilisis eros sem, nec volutpat mi bibendum vel. Nullam eget tortor in magna sagittis condimentum ac in magna. Integer id consequat enim. Praesent sodales ante non sollicitudin euismod. Nunc a ipsum varius, euismod dolor a, viverra nibh.
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </Fragment>
     );
 };
 
